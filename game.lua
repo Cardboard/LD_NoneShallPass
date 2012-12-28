@@ -142,12 +142,12 @@ function state:draw()
 	if endImage ~= nil then	love.graphics.draw(endImage, 0, 0) end
 
 	-- print debuggin' crap
-	--[[
+	
 	love.graphics.setColorMode("modulate")
 	love.graphics.setColor(colors.BLACK)
-	love.graphics.print("end1: "..Player.sword["end1"].."end2: "..Player.sword["end2"].." time: "..os.clock(), 0, 0)
+	love.graphics.print("rotation: "..Player.sword["rotation"].." time: "..os.clock(), 0, 50)
 	love.graphics.setColorMode("replace")
-	]]--
+	
 end
 
 -------------------------------------------------------------------------------
@@ -314,18 +314,26 @@ function on_collide(dt, shape_a, shape_b)
 
 	for i,v in ipairs(GoodKnights) do
 		if Player.sword["obj"]:collidesWith(v.sword["obj"]) then
-			if os.clock() < Player.sword["end1"] and os.clock() < v.sword["end1"] then
+			-- if Player and knight are on forward swing, reset them both
+			if Player.sword["forward"] == 1 and v.sword["forward"] == 1 then
+			--if os.clock() < Player.sword["end1"] and os.clock() < v.sword["end1"] then
 				Player:reset()
 				v:reset()
 				v:startPause(1)
 				-- make a clash sound
 				clash:play()
-			elseif os.clock() < Player.sword["end1"] and os.clock() > v.sword["end1"] then
+			end
+			-- if Player is on forward swing and knight is not, hurt the knight
+			if Player.sword["forward"] == 1 and v.sword["forward"] ~= 1 then
+			--elseif os.clock() < Player.sword["end1"] and os.clock() > v.sword["end1"] then
 				Player:reset()
 				v:reset()
 				v.health = v.health - 1
 				knightHit:play()
-			elseif os.clock() > Player.sword["end1"] and os.clock() < v.sword["end1"] then
+			end
+			-- if knight is on forward swing and Player is not, hurt the Player
+			if Player.sword["forward"] ~= 1 and v.sword["forward"] == 1 then 
+			--elseif os.clock() > Player.sword["end1"] and os.clock() < v.sword["end1"] then
 				Player:reset()
 				v:reset()
 				Player.health = Player.health - 1

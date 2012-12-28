@@ -33,8 +33,11 @@ function Knight:new()
 			image = "",
 			width = 32,
 			height = 256,
-			end1 = 0,
-			end2 = 0,
+			end1 = 0, --PHASE THIS OUT
+			end2 = 0, --PHASE THIS OUT!
+			rotation = 0, -- used for overhead swing attack
+			forward = 0, -- used to check if on forward/backwards/no swing
+			distance = 0, -- used for stab attack and block
 			rotate = 0,
 			obj = nil
 		}
@@ -59,9 +62,12 @@ function Knight:update(dt)
 	local x, y = self.obj:center()
 	self.x = x - self.width/2
 	self.y = y - self.height/2
+	-- get sword rotation
+	self.sword["rotation"] = self.sword["obj"]:rotation()
 	-- update position of the sword
 	local swordx, swordy = ( self.sword["height"] * math.sin(self.sword["obj"]:rotation()) ), ( self.sword["height"] * math.cos(self.sword["obj"]:rotation()) ) 
-	if self.sword["end1"] ~= 0 then
+	
+	if self.sword["rotation"] ~= 0 then
 		self.sword["x"] = (x) + swordx/2
 		self.sword["y"] = (y) - swordy/2
 		self.sword["obj"]:moveTo(self.sword["x"], self.sword["y"])
@@ -101,6 +107,7 @@ function Knight:draw()
 					(x) - self.sword["width"]/2 + swordx,
 					(y) - swordy,
 					self.sword["obj"]:rotation())
+	self.sword["obj"]:draw("fill")
 	-- draw the health bar
 	love.graphics.setColor(colors.RED)
 	love.graphics.rectangle("fill", (self.x + self.width * (3/2)), self.y, 
@@ -159,35 +166,37 @@ function Knight:jump()
 end
 
 function Knight:swing(dt)
-	-- if time left for swing
-	if os.clock() < self.sword["end1"] then
-		self.sword["rotate"] = -0.03
+	-- check if swing is rotated past 45 degress
+	if (-self.direction * self.sword["rotation"]) > math.pi/2 and self.sword["forward"] == 1 then
+		-- start backswing
+		self.sword["forward"] = -1
 	end
-	if os.clock() > self.sword["end1"] and os.clock() < self.sword["end2"] then
-		self.sword["rotate"] = 0.03
-	end
-	if os.clock() > self.sword["end2"] then
+	-- if backswing is finished
+	if (-self.direction * self.sword["rotation"]) < 0 and self.sword["forward"] == -1 then
 		self.sword["rotate"] = 0
 		self.sword["obj"]:setRotation(0)
-		self.sword["end1"], self.sword["end2"] = 0, 0
 		self.canSwing = true
+		self.sword["forward"] = 0
+	end
+	-- set the rotation of the sword
+	if self.type == nil then
+		self.sword["rotate"] = 0.03 * self.sword["forward"] * -self.direction
+	else
+		self.sword["rotate"] = 0.03 * self.sword["forward"] * self.direction
 	end
 end
 
 function Knight:reset()
 	self.sword["rotate"] = 0
 	self.sword["obj"]:setRotation(0)
-	self.sword["end1"], self.sword["end2"] = 0, 0
+	self.sword["forward"]= 0
 	self.canSwing = true
 end
 
 
 function Knight:startSwing(dt)
 	if self.canSwing == true then
-		if self.sword["end1"] == 0 then
-			self.sword["end1"] = os.clock() + 1
-			self.sword["end2"] = self.sword["end1"] + 1
-		end
+		self.sword["forward"] = 1
 		self.canSwing = false
 		self:startPause(1)
 	end

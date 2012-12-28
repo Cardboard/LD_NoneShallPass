@@ -13,6 +13,6 @@ function love.conf(t)
 	t.fsaa = 0
 	t.verticalsync = true
 	-- console
-	t.console = false
+	t.console = true
 
 end
