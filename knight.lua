@@ -107,7 +107,7 @@ function Knight:draw()
 					(x) - self.sword["width"]/2 + swordx,
 					(y) - swordy,
 					self.sword["obj"]:rotation())
-	self.sword["obj"]:draw("fill")
+	self.sword["obj"]:draw("fill") -- comment out to reveal sword
 	-- draw the health bar
 	love.graphics.setColor(colors.RED)
 	love.graphics.rectangle("fill", (self.x + self.width * (3/2)), self.y, 

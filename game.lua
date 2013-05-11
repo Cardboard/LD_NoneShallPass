@@ -4,7 +4,7 @@ local HC = require("lib/HardonCollider")
 Gamestate.game = Gamestate.new()
 local state = Gamestate.game
 -- animation library
-require("lib/AnAl")
+require("lib/AnAL")
 -- the knight class (for the player and 'enemy' knights)
 require("knight")
 

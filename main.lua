@@ -1,8 +1,8 @@
 -- hump stuff
-Gamestate = require("lib/hump.Gamestate")
-Timer = require("lib/hump.Timer")
+Gamestate = require("lib/hump.gamestate")
+Timer = require("lib/hump.timer")
 -- animation library
-require("lib/AnAl")
+require("lib/AnAL")
 -- require gamestate files
 require("menu")
 require("game")
